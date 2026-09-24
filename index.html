@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>How Many? — The Price Game</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>How Many? <span class="subtitle">the price game</span></h1>
+    <div class="header-stats">
+      <span id="roundLabel" class="stat">Round 1</span>
+    </div>
+  </header>
+
+  <main class="game">
+    <p class="prompt">How many of one thing equals the price of the other?</p>
+    <div class="turn-banner" id="turnBanner"></div>
+
+    <div class="cards">
+      <div class="item-card" id="leftCard">
+        <div class="item-emoji-group" id="leftGroup"></div>
+        <div class="item-badge badge-hidden" id="leftBadge"></div>
+        <div class="item-caption" id="leftCaption"></div>
+      </div>
+
+      <div class="vs">=</div>
+
+      <div class="item-card" id="rightCard">
+        <div class="item-emoji-group" id="rightGroup"></div>
+        <div class="item-badge badge-hidden" id="rightBadge"></div>
+        <div class="item-caption" id="rightCaption"></div>
+      </div>
+    </div>
+
+    <div class="guess-text" id="guessText"></div>
+
+    <div class="slider-area" id="sliderArea">
+      <div class="slider-track-wrap">
+        <button class="step-btn" id="btnMinus" aria-label="decrease">−</button>
+        <div class="slider-track">
+          <input type="range" id="slider" min="-1000" max="1000" value="0" step="1">
+          <div class="ghost-marker hidden" id="ghostMarker"><div class="ghost-dot"></div></div>
+        </div>
+        <button class="step-btn" id="btnPlus" aria-label="increase">+</button>
+      </div>
+      <div class="slider-labels">
+        <span id="labelLeft"></span>
+        <span id="labelRight"></span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btnCheck" class="btn btn-primary">Check my guess</button>
+      <button id="btnContinue" class="btn btn-primary hidden">Next player →</button>
+      <button id="btnNext" class="btn btn-secondary hidden">Next pair →</button>
+    </div>
+
+    <div class="result-panel hidden" id="resultPanel">
+      <div class="stars-row" id="starsRow"></div>
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-text" id="resultText"></div>
+    </div>
+
+    <div class="result-panel hidden" id="summaryPanel">
+      <div class="result-title">Round results</div>
+      <div class="summary-list" id="summaryList"></div>
+    </div>
+
+    <div class="players-bar">
+      <div class="players-list" id="playersList"></div>
+      <button id="btnAddPlayer" class="btn-add-player">+ Add player</button>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <p>Prices are approximate, typical prices for Dublin, Ireland — for fun, not for finance. 🍀</p>
+  </footer>
+
+  <script src="items.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

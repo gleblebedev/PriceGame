@@ -3,9 +3,12 @@
   'use strict';
 
   // ---------- constants ----------
-  var MAX_LOG = 9.5;          // log10 of the biggest ratio the slider can reach
-  var CURVE = 1.6;            // slider is non-linear: more precision near the middle
-  var MAX_VISUAL_ICONS = 30;  // cap on how many emoji we actually draw per side
+  var MAX_LOG = 9.5;            // log10 of the biggest ratio the slider can reach
+  var CURVE = 1.6;              // slider is non-linear: more precision near the middle
+  var MAX_VISUAL_ICONS = 1000;  // cap on how many emoji we actually draw per side
+  var MIN_ICON_PX = 3;          // smallest an icon is ever drawn at, packed at high counts
+  var MAX_ICON_PX = 72;         // biggest a single icon gets
+  var ANIMATE_ICON_LIMIT = 150; // beyond this many, skip the per-icon pop animation (perf)
 
   var ANIMALS = [
     '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸', '🐵', '🐶', '🐱',
@@ -254,11 +257,12 @@
   }
 
   // ---------- rendering: emoji groups ----------
-  function sizeClassFor(n) {
-    if (n <= 1) return 'size-xl';
-    if (n <= 6) return 'size-lg';
-    if (n <= 15) return 'size-md';
-    return 'size-sm';
+  // picks a pixel icon size that packs `n` icons into a W x H box, so the
+  // visualization keeps growing (instead of just showing a "×N" badge) all
+  // the way up to MAX_VISUAL_ICONS.
+  function packedIconSize(w, h, n, gap) {
+    var raw = Math.sqrt((w * h) / n);
+    return Math.max(MIN_ICON_PX, Math.min(MAX_ICON_PX, (raw - gap) * 0.92));
   }
 
   function makeIconEl(item) {
@@ -276,33 +280,54 @@
     return el;
   }
 
-  // full animated visualization: draws `count` copies, growing/shrinking with a pop animation
+  // full animated visualization: draws `count` copies, packed to fit the box, with a pop animation
   function renderGroup(groupEl, badgeEl, item, count) {
     var visual = Math.max(1, Math.min(MAX_VISUAL_ICONS, Math.round(count)));
-    var sizeClass = sizeClassFor(visual);
-    groupEl.className = 'item-emoji-group ' + sizeClass;
+    groupEl.className = 'item-emoji-group';
+
+    var w = groupEl.clientWidth || 220;
+    var h = groupEl.clientHeight || 100;
+    var gap = visual <= 20 ? 4 : (visual <= 100 ? 2 : 0);
+    var size = packedIconSize(w, h, visual, gap);
+    groupEl.style.gap = gap + 'px';
 
     var current = groupEl.children.length;
+    var animate = visual <= ANIMATE_ICON_LIMIT;
 
     if (visual > current) {
+      for (var j = 0; j < current; j++) {
+        groupEl.children[j].style.fontSize = size + 'px';
+      }
       for (var i = current; i < visual; i++) {
         var el = makeIconEl(item);
-        el.classList.add('pop-in');
-        el.style.animationDelay = (Math.min(i - current, 20) * 15) + 'ms';
+        el.style.fontSize = size + 'px';
+        if (animate) {
+          el.classList.add('pop-in');
+          el.style.animationDelay = (Math.min(i - current, 20) * 15) + 'ms';
+        }
         groupEl.appendChild(el);
       }
     } else if (visual < current) {
       var toRemove = Array.prototype.slice.call(groupEl.children, visual);
       toRemove.forEach(function (child, idx) {
         child.classList.remove('pop-in');
-        child.classList.add('pop-out');
-        child.style.animationDelay = (idx * 10) + 'ms';
+        if (animate) {
+          child.classList.add('pop-out');
+          child.style.animationDelay = (idx * 10) + 'ms';
+        }
       });
       setTimeout(function () {
         toRemove.forEach(function (child) {
           if (child.parentNode === groupEl) groupEl.removeChild(child);
         });
-      }, 220);
+      }, animate ? 220 : 0);
+      for (var k = 0; k < visual; k++) {
+        groupEl.children[k].style.fontSize = size + 'px';
+      }
+    } else {
+      for (var m = 0; m < visual; m++) {
+        groupEl.children[m].style.fontSize = size + 'px';
+      }
     }
 
     if (count > MAX_VISUAL_ICONS) {

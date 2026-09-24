@@ -143,10 +143,9 @@ body {
   transition: font-size 200ms ease;
 }
 
+/* renderGroup sizes each icon inline (packed to fit up to 1000 of them);
+   renderStatic (every player after the first) always shows one icon at this size. */
 .item-emoji-group.size-xl .item-icon { font-size: 3.2rem; }
-.item-emoji-group.size-lg .item-icon { font-size: 2.2rem; }
-.item-emoji-group.size-md .item-icon { font-size: 1.5rem; }
-.item-emoji-group.size-sm .item-icon { font-size: 1.05rem; }
 
 img.item-icon {
   width: 2.4em;

@@ -51,6 +51,17 @@ window.ITEMS = [
   { id: 'car', name: 'Car', caption: 'a new car', emoji: '🚗', image: null, price: 32000, category: 'adult' },
   { id: 'house', name: 'House', caption: 'a house in Dublin', emoji: '🏠', image: null, price: 480000, category: 'adult' },
 
+  // ---- Clothes ----
+  { id: 'socks', name: 'Socks', caption: 'a pair of socks', emoji: '🧦', image: null, price: 5, category: 'clothes' },
+  { id: 'underwear', name: 'Underwear', caption: 'a pack of underwear', emoji: '🩲', image: null, price: 8, category: 'clothes' },
+  { id: 'tshirt', name: 'T-shirt', caption: 'a T-shirt', emoji: '👕', image: null, price: 12, category: 'clothes' },
+  { id: 'kids_jacket', name: "Kids' jacket", caption: "a kids' jacket", emoji: '🧥', image: null, price: 35, category: 'clothes' },
+  { id: 'trousers', name: 'Trousers', caption: 'a pair of trousers', emoji: '👖', image: null, price: 45, category: 'clothes' },
+  { id: 'jersey', name: 'Jersey', caption: 'a sports jersey', emoji: '🎽', image: null, price: 75, category: 'clothes' },
+  { id: 'trainers', name: 'Trainers', caption: 'a pair of trainers', emoji: '👟', image: null, price: 70, category: 'clothes' },
+  { id: 'dress', name: 'Dress', caption: 'a dress', emoji: '👗', image: null, price: 55, category: 'clothes' },
+  { id: 'jacket', name: 'Jacket', caption: 'a grown-up jacket', emoji: '🧥', image: null, price: 90, category: 'clothes' },
+
   // ---- Ridiculous things ----
   { id: 'rocket', name: 'Rocket launch', caption: 'a rocket launch', emoji: '🚀', image: null, price: 65000000, category: 'ridiculous' },
   { id: 'a320', name: 'Airbus A320', caption: 'a new Airbus A320neo', emoji: '✈️', image: null, price: 110000000, category: 'ridiculous' },

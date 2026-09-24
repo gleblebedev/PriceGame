@@ -74,14 +74,6 @@
     return { sign: sign, N: N };
   }
 
-  function guessToSlider(sign, N, snap) {
-    if (N <= 1 || sign === 0) return 0;
-    var n = snap ? snapToNice(N) : N;
-    var log10N = Math.log10(n);
-    var a = Math.pow(Math.min(log10N / MAX_LOG, 1), 1 / CURVE);
-    return sign * a;
-  }
-
   // guessR = priceRight / priceLeft implied by a slider guess
   function guessToRatio(g) {
     if (g.sign < 0) return g.N;
@@ -149,20 +141,14 @@
   var guessText = document.getElementById('guessText');
   var sliderArea = document.getElementById('sliderArea');
   var slider = document.getElementById('slider');
-  var ghostMarker = document.getElementById('ghostMarker');
   var btnMinus = document.getElementById('btnMinus');
   var btnPlus = document.getElementById('btnPlus');
   var labelLeft = document.getElementById('labelLeft');
   var labelRight = document.getElementById('labelRight');
 
   var btnCheck = document.getElementById('btnCheck');
-  var btnContinue = document.getElementById('btnContinue');
+  var btnNextPlayer = document.getElementById('btnNextPlayer');
   var btnNext = document.getElementById('btnNext');
-
-  var resultPanel = document.getElementById('resultPanel');
-  var starsRow = document.getElementById('starsRow');
-  var resultTitle = document.getElementById('resultTitle');
-  var resultText = document.getElementById('resultText');
 
   var summaryPanel = document.getElementById('summaryPanel');
   var summaryList = document.getElementById('summaryList');
@@ -427,15 +413,6 @@
     return 0;
   }
 
-  var RESULT_TITLES = {
-    5: 'Amazing! 🌟',
-    4: 'Great guess!',
-    3: 'Good try!',
-    2: 'Getting there!',
-    1: 'Keep guessing!',
-    0: 'Not quite!'
-  };
-
   function starsMarkup(stars) {
     var out = '';
     for (var i = 0; i < 5; i++) out += i < stars ? '⭐' : '☆';
@@ -450,6 +427,7 @@
   function startTurn() {
     state.phase = 'guessing';
     var p = currentRoundPlayer();
+    var isLast = state.turnIndex === state.roundOrder.length - 1;
     turnBanner.textContent = p.animal + ' Player ' + (state.turnIndex + 1) + '’s turn';
 
     slider.value = '0';
@@ -457,13 +435,16 @@
     btnMinus.disabled = false;
     btnPlus.disabled = false;
 
-    btnCheck.classList.remove('hidden');
+    // "Check my guess" only shows up for the last player to go — that's the
+    // only moment every guess is in, so it's also the only moment the
+    // correct answer can be revealed. Everyone before that just locks in
+    // their guess and hands off to the next player.
+    btnCheck.classList.toggle('hidden', !isLast);
     btnCheck.disabled = false;
-    btnContinue.classList.add('hidden');
+    btnNextPlayer.classList.toggle('hidden', isLast);
+    btnNextPlayer.disabled = false;
     btnNext.classList.add('hidden');
 
-    ghostMarker.classList.add('hidden');
-    resultPanel.classList.add('hidden');
     summaryPanel.classList.add('hidden');
     sliderArea.classList.remove('hidden');
 
@@ -471,9 +452,8 @@
     updateGuessDisplay();
   }
 
-  btnCheck.addEventListener('click', function () {
-    if (state.phase !== 'guessing') return;
-
+  // records the current player's guess (and how many stars it's worth) without revealing anything
+  function recordGuess() {
     var s = Number(slider.value) / 1000;
     var g = sliderToGuess(s);
     var guessR = guessToRatio(g);
@@ -482,52 +462,19 @@
 
     var p = currentRoundPlayer();
     state.results[p.id] = { stars: stars, sign: g.sign, N: g.N };
+  }
 
-    // ghost marker at the true position
-    var actualSign = actualR >= 1 ? -1 : 1;
-    var actualN = actualR >= 1 ? actualR : 1 / actualR;
-    var actualS = guessToSlider(actualSign, actualN, false);
-    ghostMarker.style.left = ((actualS + 1) / 2 * 100) + '%';
-    ghostMarker.classList.remove('hidden');
-
-    resultTitle.textContent = RESULT_TITLES[stars];
-    var trueLeftCount = actualSign < 0 ? roundSig(actualN, 3) : 1;
-    var trueRightCount = actualSign > 0 ? roundSig(actualN, 3) : 1;
-    resultText.innerHTML =
-      formatPrice(state.left.price) + ' ' + state.left.emoji + ' &nbsp;·&nbsp; ' +
-      formatPrice(state.right.price) + ' ' + state.right.emoji + '<br>' +
-      'Really: <strong>' + formatNumber(trueLeftCount) + '</strong> ' + state.left.emoji +
-      ' = <strong>' + formatNumber(trueRightCount) + '</strong> ' + state.right.emoji;
-
-    starsRow.innerHTML = '';
-    for (var i = 0; i < 5; i++) {
-      var starEl = document.createElement('span');
-      starEl.className = 'star';
-      starEl.textContent = i < stars ? '⭐' : '☆';
-      if (i < stars) {
-        starEl.classList.add('pop-in');
-        starEl.style.animationDelay = (i * 90) + 'ms';
-      }
-      starsRow.appendChild(starEl);
-    }
-
-    resultPanel.classList.remove('hidden');
-    slider.disabled = true;
-    btnMinus.disabled = true;
-    btnPlus.disabled = true;
-    btnCheck.classList.add('hidden');
-    btnContinue.classList.remove('hidden');
-    btnContinue.textContent = (state.turnIndex < state.roundOrder.length - 1) ? 'Next player →' : 'See who won →';
-    state.phase = 'result';
+  btnNextPlayer.addEventListener('click', function () {
+    if (state.phase !== 'guessing') return;
+    recordGuess();
+    state.turnIndex++;
+    startTurn();
   });
 
-  btnContinue.addEventListener('click', function () {
-    if (state.turnIndex < state.roundOrder.length - 1) {
-      state.turnIndex++;
-      startTurn();
-    } else {
-      showSummary();
-    }
+  btnCheck.addEventListener('click', function () {
+    if (state.phase !== 'guessing') return;
+    recordGuess();
+    showSummary();
   });
 
   function showSummary() {
@@ -535,9 +482,8 @@
     turnBanner.textContent = '🏁 Round results';
 
     sliderArea.classList.add('hidden');
-    resultPanel.classList.add('hidden');
     btnCheck.classList.add('hidden');
-    btnContinue.classList.add('hidden');
+    btnNextPlayer.classList.add('hidden');
     btnNext.classList.remove('hidden');
 
     var actualR = state.right.price / state.left.price;

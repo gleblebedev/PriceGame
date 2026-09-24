@@ -41,7 +41,6 @@
         <button class="step-btn" id="btnMinus" aria-label="decrease">−</button>
         <div class="slider-track">
           <input type="range" id="slider" min="-1000" max="1000" value="0" step="1">
-          <div class="ghost-marker hidden" id="ghostMarker"><div class="ghost-dot"></div></div>
         </div>
         <button class="step-btn" id="btnPlus" aria-label="increase">+</button>
       </div>
@@ -52,15 +51,9 @@
     </div>
 
     <div class="actions">
-      <button id="btnCheck" class="btn btn-primary">Check my guess</button>
-      <button id="btnContinue" class="btn btn-primary hidden">Next player →</button>
+      <button id="btnCheck" class="btn btn-primary hidden">Check my guess</button>
+      <button id="btnNextPlayer" class="btn btn-primary hidden">Next player →</button>
       <button id="btnNext" class="btn btn-secondary hidden">Next pair →</button>
-    </div>
-
-    <div class="result-panel hidden" id="resultPanel">
-      <div class="stars-row" id="starsRow"></div>
-      <div class="result-title" id="resultTitle"></div>
-      <div class="result-text" id="resultText"></div>
     </div>
 
     <div class="result-panel hidden" id="summaryPanel">

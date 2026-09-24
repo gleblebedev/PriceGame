@@ -234,28 +234,11 @@ img.item-icon {
 .slider-track {
   position: relative;
   flex: 1;
-  padding-top: 14px;
 }
 
 #slider {
   width: 100%;
   accent-color: var(--accent);
-}
-
-.ghost-marker {
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  pointer-events: none;
-}
-
-.ghost-dot {
-  width: 4px;
-  height: 26px;
-  margin: 0 auto;
-  background: var(--good);
-  border-radius: 3px;
-  box-shadow: 0 0 0 3px rgba(111, 207, 151, 0.25);
 }
 
 .slider-labels {
@@ -306,23 +289,10 @@ img.item-icon {
   text-align: center;
 }
 
-.stars-row {
-  font-size: 2rem;
-  letter-spacing: 4px;
-  margin-bottom: 6px;
-}
-.star { display: inline-block; }
-
 .result-title {
   font-size: 1.2rem;
   font-weight: 800;
   margin-bottom: 6px;
-}
-
-.result-text {
-  color: var(--muted);
-  font-size: 1rem;
-  line-height: 1.6;
 }
 
 .summary-list {
